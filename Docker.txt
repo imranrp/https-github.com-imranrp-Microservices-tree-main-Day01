@@ -1,0 +1,260 @@
+Docker
+======
+* Docker is an open-source project for automating the deployment of apps as portable, self-sufficient containers that can run on the cloud or on premises.
+
+Image vs Container
+------------------
+Class Employee --> Objects emp1, emp2, emp3
+Image EmpWebApi --> Containers 5000, 6000, 7000
+* Image contains the app, its dependencies and configuration settings.
+* The running instance of an image is called as a container.
+* There may be multiple containers for the same image.
+
+Install Docker
+--------------
+1) Download 'Docker Desktop for Windows'
+2) Run the Setup
+3) Open command prompt:
+> docker
+
+DockerHub
+---------
+* DockerHub is a registry which contains a collection of private and public images.
+1) Open DockerHub (hub.docker.com)
+2) Type the name of a public image in the search box
+3) Select an image to view its details
+
+Donwloading Images
+------------------
+* Ensure 'Docker Desktop' is running
+* To download the latest version:
+> docker pull postgres
+* To view the list of images:
+> docker images
+* To download a specific verion:
+> docker pull postgres:15.5
+> docker images
+
+Running Containers
+------------------
+* To run the container in the foreground:
+> docker run -e POSTGRES_PASSWORD=password postgres
+NOTE: The option "-e" stands for environment variable
+* Open another command prompt and view the list of running containers:
+> docker ps
+* To view even the stopped(exited) containers:
+> docker ps -a
+* Go back to first command prompt and press Ctrl+C to stop the container
+* To run the container in the background:
+> docker run -d -e POSTGRES_PASSWORD=password postgres
+NOTE: The option "-d" stands for detached
+* To run the container in a different port number:
+> docker run -d -p 5432:5500 -e POSTGRES_PASSWORD=password postgres
+NOTE: The option "-p" stands for port number
+The first number is the "host" port number; second one is the "container" port number
+* To run the container with a specific name:
+> docker run --name postgres1 -d -p 5432:5600 -e POSTGRES_PASSWORD=password postgres
+
+Stopping Containers
+-------------------
+> docker stop busy_payne
+[OR]
+> docker stop b4e618abec52 
+
+Restarting Containers
+---------------------
+> docker start busy_payne
+[OR]
+> docker start b4e618abec52 
+
+Deleting Containers
+-------------------
+> docker rm busy_payne
+[OR]
+> docker rm b4e618abec52 
+
+Deleting Images
+---------------
+> docker rmi postgres:15.5
+
+Pull Image and Run Container
+----------------------------
+> docker run hello-world
+
+Working with Multiple Images
+----------------------------
+* Pull the required images:
+> docker pull mongo:4.4.6
+> docker pull mongo-express
+> docker images
+* To view the list of networks:
+> docker network ls
+* To create a new network:
+> docker network create mongo-network
+* To run the containers inside the network:
+> docker run --name mongodb -d -e MONGO_INITDB_ROOT_USERNAME=admin 
+	-e MONGO_INITDB_ROOT_PASSWORD=password
+	--net mongo-network mongo:4.4.6
+> docker ps
+> docker run --name mongo-express -d -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+	-e ME_CONFIG_MONGODB_ADMINPASSWORD=password
+	-e ME_CONFIG_MONGODB_SERVER=mongodb
+	-p 8081:8081 --net mongo-network mongo-express
+> docker ps
+* Navigate to "http://localhost:8081"
+* Type "admin" for username and "pass" for password
+* To stop the containers:
+> docker stop adeb70a58bef 
+> docker stop b0914f945745 
+* To delete the containers:
+> docker rm adeb70a58bef 
+> docker rm b0914f945745 
+* To delete the network:
+> docker network rm mongo-network
+
+Docker Compose
+--------------
+* Docker compose is used to start/stop multiple containers using a single command
+* It automatically creates a Docker network and runs all the containers inside the same network
+* It automatically stops and deletes all the containers and also the network when stopped
+1) Create a .yaml file which contains the details of the containers
+2) Navigate to the path where the file is save:
+> CD E:\Wells Fargo-DotNet Microservices\Day03
+3) To start the containers:
+> docker-compose -f mongo.yaml up
+4) Navigate to "http://localhost:8081"
+5) Top stop:
+> docker-compose -f mongo.yaml down
+
+Docker Volume
+-------------
+* A Docker volume is used to persist data across sessions.
+
+Creating Images
+---------------
+* The instructions for creating an image should be placed in a file named 'Dockerfile'
+1) Navigate to the folder containing the solution file:
+> CD E:\Wells Fargo-DotNet Microservices\Day03\SampleMvcApp
+2) To create the image:
+> docker build -t samplemvcapp -f SampleMvcApp/Dockerfile .
+> docker images
+3) To run a container for the image:
+> docker run --name mvcapp -d -p 8080:8080 samplemvcapp
+4) Navigate to "http://localhost:8080"
+
+Deployment
+----------
+I. Code deployment
+- Local folder
+- IIS
+- Azure
+- AWS
+etc.
+II. Image deployment
+- DockerHub
+- Azure ACR
+- AWS ECR
+etc.
+
+Deploying to Azure
+------------------
+1) Open Azure Portal (portal.azure.com)
+2) Create a 'Resource Group'
+3) Select a 'Subscription'
+4) Type a name (example: rg-snrao)
+5) Select a 'Region'
+6) Click on 'Review+Create' button
+7) Click on 'Create' button
+8) Create an 'App Service'
+9) Select 'Web App'
+10) Select a subscription and a resource group
+11) Type a name (example: samplemvcapp-snrao)
+12) Select 'Code' for 'Publish'
+13) Select a 'Runtime stack' (example: DotNet 8)
+14) Select 'Windows' for 'OS'
+15) Select a 'Region'
+16) Click on the link 'Explore pricing plans'
+17) Check 'F1(Free)' and click 'Select' button
+18) Click on 'Review+Create' button
+19) Click on 'Create' button
+20) Open the web app and click on 'Browse' button
+21) In VS, right-click on your project and select 'Publish' [OR] click on 'New Profile' if the Publish screen is already open
+22) Select 'Azure' for 'Target'
+23) Select 'Azure App Service(Windows)' for 'Specific Target'
+24) Login with your Azure credentials
+25) Select your resource group
+26) Select your web app
+27) Click 'Finish' button
+28) Click 'Close' button
+29) Click 'Publish' button
+30) Check if the app opens in the browser
+
+Pushing Image to DockerHub
+--------------------------
+1) Open hub.docker.com
+2) Sign in
+3) Open command prompt:
+> docker login
+4) Tag the image with your user id:
+> docker tag samplemvcapp:latest snrao71/samplemvcapp:latest
+5) Push the image to DockerHub:
+> docker push snrao71/samplemvcapp:latest
+6) In DockerHub, click on 'Repositories' to view the image.
+
+Deploying Image to Azure
+------------------------
+1) In Azure portal, create a new App service web app
+2) Type a name (example: samplemvcappimage-snrao)
+3) Select 'Docker Container' for 'Publish'
+4) Select 'Linux' for 'OS'
+5) Select a pricing plan
+6) Click 'Next' button twice
+7) For 'Image source', select 'DockerHub'
+8) Type the image name with tag (example: snrao71/samplemvcapp:latest)
+9) Click 'Review + create' button
+10) Click 'Create' button
+11) Open the web app
+12) Click on 'Browse' button
+
+Pushing Image to ACR
+--------------------
+1) In Azure portal, create a new 'Container registry'
+2) Select a subscription and a resource group
+3) Type a name (example: azcontregsnrao)
+4) Select a location and a pricing plan
+5) Click on 'Review+create'
+6) Click on 'Create'
+7) Open the ACR and copy the 'Login server' name
+8) Tag the image with the Azure container registry name:
+> docker tag samplemvcapp:latest azcontregsnrao.azurecr.io/samplemvcapp:latest
+9) Push the image to ACR:
+> docker push azcontregsnrao.azurecr.io/samplemvcapp:latest
+10) If you get the error "unauthorized: authentication required":
+> az acr login --name azcontregsnrao
+* Again give the push command
+11) If you get the error "denied: requested access to the resource is denied":
+* Open the ACR in Azure portal
+* Click on 'Properties' on the left panel
+* Check the option "Admin user"
+* Click on "Save" button
+* Again login
+* Again push
+12) In ACR, click on 'Repositories' to view your image
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

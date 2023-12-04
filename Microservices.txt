@@ -1,0 +1,120 @@
+Microservices
+-------------
+
+
+Running Airlines App
+--------------------
+1) Download and unzip 'EFAirlinesLibrary.zip'
+2) Open the solution in VS 2022
+3) Right-click on the EFAirlinesLibrary project and select 'Set as Startup project'
+4) Open Package Manager Console from Tools menu
+5) Click on the dropdown for 'Default project' and select EFAirlinesLibrary
+6) Type the following commands:
+> Add-Migration Initial
+> Update-Database
+7) Open 'SQL Server Object Explorer' and check if the database and the tables got created
+8) Right-click on the solution and select 'Configure Startup Projects'
+9) Select 'Multiple startup projects'
+10) Select 'Start' in 'Action' dropdown for both the Api project and Mvc project
+11) Press F5 to run the projects
+
+Airlines with Microservices
+---------------------------
+1) WellsFargoFlightDB
+   - Flight table
+2) WellsFargoFlightScheduleDB
+   - Flight table (only with FlightNo)
+   - FlightSchedule table
+3) WellsFargoReservationDB
+   - FlightSchedule table (only with FlightNo and TravelDate)
+   - ReservationMaster table
+   - ReservationDetail table
+
+Steps in VS
+-----------
+1) Create a blank solution named 'Airlines Management using Microservices'
+2) Add 3 class library projects named 'FlightRepository', 'FlightScheduleRepository' and 'ReservationRepository'
+3) Install the following packages in all the 3 projects:
+   - Microsoft.EntityFrameworkCore.Tools
+   - Microsoft.EntityFrameworkCore.SqlServer
+4) Add 2 folders named 'Models' and 'Repos' in all the 3 projects
+5) In FlightRepository project Models folder, add a class named 'Flight'
+6) Add another class named 'WellsFargoFlightDBContext' in the same folder
+7) Make sure FlightRepository project is the startup project
+8) Open Package Manager Console
+9) Make sure FlightRepository is the default project
+10) Run the following commands:
+> Add-Migration Initial
+> Update-Database
+11) Add the interface 'IFlightRepo' and the class 'EFFlightRepo' in the Repos folder
+12) Rename the context class to 'WellsFargoFlightDBContext'
+13) In FlightScheduleRepository project Models folder, add a class named 'Flight'
+14) Add another class named 'FlightRepository' in the same folder
+15) Add another class named 'WellsFargoFlightScheduleDBContext' in the same folder
+16) Make sure FlightScheduleRepository project is the startup project
+17) Open Package Manager Console
+18) Make sure FlightScheduleRepository is the default project
+19) Run the following commands:
+> Add-Migration Initial
+> Update-Database
+20) Add the interface 'IFlightScheduleRepo' and the class 'EFFlightScheduleRepo' in the Repos folder
+21) Rename the context class to 'WellsFargoFlightScheduleDBContext'
+22) In ReservationRepository project Models folder, add a class named 'FlightSchedule'
+23) Add another class named 'ReservationMaster' in the same folder
+24) Add another class named 'ReservationDetail' in the same folder
+25) Add another class named 'WellsFargoReservationDBContext' in the same folder
+26) Make sure ReservationRepository project is the startup project
+27) Open Package Manager Console
+28) Make sure ReservationRepository is the default project
+29) Run the following commands:
+> Add-Migration Initial
+> Update-Database
+20) Add the interfaces 'IReservationMasterRepo' and 'IReservationDetailRepo' in the Repos folder
+21) Also add the classes 'EFReservationMasterRepo' and 'EFReservationDetailRepo' in the Repos folder
+22) Rename the context class to 'WellsFargoReservationDBContext' in both the classes
+23) Add 3 web api projects named 'FlightService', 'FlightScheduleService' and 'ReservationService'
+24) In FlightService project, add an empty API controller named 'FlightController'
+25) Add reference to 'FlightRepository'
+26) Add the following line in Program.cs:
+        builder.Services.AddScoped<IFlightRepo, EFFlightRepo>();
+27) In FlightScheduleService project, add an empty API controller named 'FlightScheduleController'
+28) Add reference to 'FlightScheduleRepository'
+29) Add the following line in Program.cs:
+        builder.Services.AddScoped<IFlightScheduleRepo, EFFlightScheduleRepo>();
+30) In ReservationService project, add an empty API controller named 'ReservationController'
+31) Add reference to 'ReservationRepository'
+32) Add the following lines in Program.cs:
+	builder.Services.AddScoped<IReservationMasterRepo, EFReservationMasterRepo>();
+	builder.Services.AddScoped<IReservationDetailRepo, EFReservationDetailRepo>();
+33) Set all the 3 web api projects as startup projects
+34) Run the projects and test all the api endpoints
+35) Add the following method in the 'IFlightScheduleRepo' interface in the FlightScheduleRepository Repos folder:
+	Task InsertFlight(Flight flight);
+36) Implement the method in the 'EFFlightScheduleRepo' class
+37) In FlightScheduleController web api, add another [HttpPost] method to call the above method
+38) In FlightService project, open the 'FlightController' api and update the [HttpPost] method to call the above method in the FlightScheduleController
+39) Add the following method in the 'IReservationMasterRepo' interface in the ReservationRepository Repos folder:
+	Task InsertFlightSchedule(FlightSchedule schedule);
+40) Implement the method in the 'EFReservationMasterRepo' class
+41) In ReservationController web api, add another [HttpPost] method to call the above method
+42) In FlightScheduleService project, open the 'FlightScheduleController' api and update the [HttpPost] method to call the above method
+
+* To call another service asynchronously using RabbitMQ:
+43) Install RabbitMQ
+44) Open RabbitMQ admin console and create the queues and exchanges
+45) In VS, install the following packages in all the 3 web api projects:
+    - RabbitMQ.Client
+    - Newtonsoft.Json
+46) Open the 'FlightController' api and modify the [HttpPost] method to write the Flight details to a RabbitMQ queue (example: flightqueue)
+47) Open Program.cs from the FlightSchedule service and add a method to read from the queue
+48) Call this method in the Main() method
+49) Open the 'FlightScheduleController' api and modify the [HttpPost] method to write the FlightSchedule details to a RabbitMQ queue (example: flightSchedulequeue)
+50) Open Program.cs from the Reservation service and add a method to read from the above queue
+51) Call this method in the Main() method
+
+
+
+
+
+
+

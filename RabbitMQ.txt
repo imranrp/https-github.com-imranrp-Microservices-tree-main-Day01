@@ -1,0 +1,45 @@
+RabbitMQ
+========
+Installing RabbitMQ
+-------------------
+1) Open Windows PowerShell command prompt as administrator. 
+2) Open https://chocolatey.org/install
+3) Copy the Set-ExecutionPolicy command.
+4) Paste it in the prompt.
+5) Execute the following command to install RabbitMQ:
+> choco install rabbitmq
+6) Type Y for any prompts.
+7) Open browser and navigate to:
+http://localhost:15672
+8) Type "guest" for both Username and password.
+
+Creating Exchanges and Queues
+-----------------------------
+1) Click on 'Exchanges' tab.
+2) Click on 'Add a new exchange'.
+3) Type a name (example: flightxchange).
+4) Select 'fanout' for type.
+5) Click on 'Add exchange' button.
+6) Click on 'Queues' tab.
+7) Click on 'Add a new queue'.
+8) Type a name (example: flightqueue).
+9) Click on 'Add queue' button.
+10) Click on 'Exchanges' tab again.
+11) Click on the exchange name (flightxchange).
+12) Click on 'Bindings'.
+13) Type the queue name in 'To queue' textbox (flightqueue).
+14) Click on 'Bind' button.
+15) Repeat the above steps to create an exchange named 'flightSchedulexchange' and a queue named 'flightSchedulequeue'
+16) Bind the exchange to the queue
+
+
+
+
+
+
+
+
+
+
+
+
